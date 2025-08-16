@@ -1,20 +1,52 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import Cookies from "js-cookie";
 
 const LoginPage = () => {
+  const router = useRouter();
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const [year, setYear] = useState<number | null>(null);
 
   useEffect(() => {
     setYear(new Date().getFullYear());
   }, []);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("Logging in", { email, password });
+    setLoading(true);
+    setError(null);
+
+    try {
+      const res = await fetch("http://localhost:5000/api/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok || !data.success) {
+        setError(data.message || "Invalid credentials");
+        setLoading(false);
+        return;
+      }
+
+      // Save JWT token in cookie
+      Cookies.set("auth_token", data.token, { expires: 1 }); // expires in 1 day
+
+      // Redirect to dashboard
+      router.push("/dashboard");
+    } catch (err: any) {
+      setError(err.message || "Something went wrong");
+      setLoading(false);
+    }
   };
 
   return (
@@ -28,6 +60,8 @@ const LoginPage = () => {
         </div>
 
         <form className="mt-6 space-y-6" onSubmit={handleSubmit}>
+          {error && <p className="text-red-500 text-sm">{error}</p>}
+
           <div>
             <label htmlFor="email" className="block text-sm font-medium mb-1">
               Email
@@ -67,9 +101,10 @@ const LoginPage = () => {
 
           <button
             type="submit"
+            disabled={loading}
             className="w-full py-2 px-4 bg-primary text-primary-foreground rounded-lg font-semibold hover:bg-primary-foreground hover:text-primary transition-colors"
           >
-            Login
+            {loading ? "Logging in..." : "Login"}
           </button>
         </form>
 
