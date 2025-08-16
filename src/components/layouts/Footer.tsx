@@ -5,6 +5,8 @@ import Link from "next/link";
 import { Facebook, Twitter, Instagram, Linkedin } from "lucide-react";
 
 const Footer = () => {
+  const currentYear = new Date().getFullYear(); // runs on client
+
   return (
     <footer className="bg-card text-foreground border-t border-border mt-12">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 flex flex-col md:flex-row items-center justify-between space-y-6 md:space-y-0">
@@ -12,7 +14,7 @@ const Footer = () => {
         <div className="text-center md:text-left space-y-2">
           <h2 className="text-lg font-semibold">Event Management System</h2>
           <p className="text-sm text-muted-foreground">
-            &copy; {new Date().getFullYear()} All rights reserved.
+            &copy; {currentYear} All rights reserved.
           </p>
         </div>
 
