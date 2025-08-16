@@ -8,6 +8,7 @@ export interface IEvent {
   description: string;
   status: EventStatus;
   date: string;      // ISO string
+  startDate: string; // ISO string
   endDate: string;   // ISO string
   location: string;
   image?: string;

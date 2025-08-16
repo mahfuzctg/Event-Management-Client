@@ -1,20 +1,17 @@
-// src/app/layout.tsx
-import "./globals.css"
-import { ThemeProvider } from "next-themes"
-import Navbar from "@/components/layouts/Navbar"
-import Footer from "@/components/layouts/Footer"
+import { ThemeProvider } from "@/providers/theme-provider";
+import "./globals.css";
+import dynamic from "next/dynamic";
+import Navbar from "@/components/layouts/Navbar";
+import Footer from "@/components/layouts/Footer";
+
 
 
 export const metadata = {
   title: "Event Management System",
   description: "Browse and manage events easily",
-}
+};
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode
-}) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
       <body className="bg-background text-foreground transition-colors duration-300 flex flex-col min-h-screen">
@@ -25,5 +22,5 @@ export default function RootLayout({
         </ThemeProvider>
       </body>
     </html>
-  )
+  );
 }
