@@ -1,5 +1,6 @@
+import Navbar from "@/components/layouts/Navbar"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import Navbar from "@/components/navbar"
+
 
 export default function HomePage() {
   return (
