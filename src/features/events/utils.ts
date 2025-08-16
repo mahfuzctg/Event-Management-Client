@@ -6,8 +6,8 @@ import dayjs from "dayjs";
  */
 export const getEventStatus = (event: IEvent): EventStatus => {
   const now = dayjs();
-  const start = dayjs(event.date);       // 👈 backend sends "date"
-  const end = dayjs(event.endDate);      // 👈 backend sends "endDate"
+  const start = dayjs(event.date);       
+  const end = dayjs(event.endDate);      
 
   if (now.isBefore(start)) return "Upcoming";
   if (now.isAfter(end)) return "Past";
@@ -19,6 +19,6 @@ export const getEventStatus = (event: IEvent): EventStatus => {
  */
 export const sortEventsChronologically = (events: IEvent[]): IEvent[] => {
   return [...events].sort(
-    (a, b) => dayjs(a.date).valueOf() - dayjs(b.date).valueOf() // 👈 use "date"
+    (a, b) => dayjs(a.date).valueOf() - dayjs(b.date).valueOf() 
   );
 };
