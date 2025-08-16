@@ -1,0 +1,73 @@
+frontend/
+│
+├── src/                               # All source code
+│   ├── app/                           # Next.js App Router (routes & layouts)
+│   │   ├── layout.tsx                 # Root layout (public navbar/footer)
+│   │   ├── page.tsx                   # Public Home page (event listing)
+│   │   │
+│   │   ├── dashboard/                 # Admin dashboard (protected)
+│   │   │   ├── layout.tsx             # Dashboard layout (sidebar + navbar)
+│   │   │   ├── page.tsx               # Dashboard overview
+│   │   │   ├── events/                # Event CRUD
+│   │   │   │   ├── page.tsx           # List events (admin)
+│   │   │   │   ├── create/page.tsx    # Create event
+│   │   │   │   └── [id]/edit/page.tsx # Edit event
+│   │   │   └── profile/page.tsx       # Admin profile
+│   │   │
+│   │   ├── events/                    # Public event pages
+│   │   │   ├── page.tsx               # Public listing (Ongoing/Upcoming/Past)
+│   │   │   └── [id]/page.tsx          # Event details
+│   │   │
+│   │   └── auth/                      # Authentication
+│   │       ├── login/page.tsx         # Admin login
+│   │       └── logout/page.tsx        # Logout handler
+│   │
+│   ├── components/                    # Reusable UI components
+│   │   ├── ui/                        # ShadCN UI (generated)
+│   │   ├── layouts/                   # Layout pieces
+│   │   │   ├── DashboardSidebar.tsx
+│   │   │   ├── DashboardNavbar.tsx
+│   │   │   └── PublicNavbar.tsx
+│   │   ├── events/                    # Event UI
+│   │   │   ├── EventCard.tsx
+│   │   │   ├── EventList.tsx
+│   │   │   ├── EventForm.tsx          # Reused for create & edit
+│   │   │   └── EventFilters.tsx
+│   │   └── common/                    # Generic reusable UI
+│   │       ├── Button.tsx
+│   │       ├── LoadingSpinner.tsx
+│   │       └── ErrorMessage.tsx
+│   │
+│   ├── features/                      # Domain-driven "feature modules"
+│   │   ├── events/                    # Event feature (logic + data)
+│   │   │   ├── api.ts                 # API requests (getEvents, createEvent, etc.)
+│   │   │   ├── hooks.ts               # useEvents, useEventById
+│   │   │   └── utils.ts               # Status calc, sorting, formatting
+│   │   └── auth/                      # Auth feature
+│   │       ├── api.ts                 # login, logout
+│   │       ├── hooks.ts               # useAuth, useIsAdmin
+│   │       └── utils.ts               # token, role helpers
+│   │
+│   ├── hooks/                         # Global generic hooks
+│   │   ├── useEventStatus.ts          # Calculate Upcoming/Ongoing/Past
+│   │   ├── useTimezone.ts             # Local timezone conversion
+│   │   └── useModal.ts                # Generic modal state handler
+│   │
+│   ├── lib/                           # Core shared libraries
+│   │   ├── api-client.ts              # Fetch/Axios base instance
+│   │   ├── auth.ts                    # Auth helpers (cookies/tokens)
+│   │   └── date.ts                    # Day.js utilities
+│   │
+│   ├── styles/                        # Styles & Tailwind config
+│   │   ├── globals.css
+│   │   └── tailwind.config.ts
+│   │
+│   ├── types/                         # TypeScript interfaces
+│   │   ├── event.ts                   # Event types (IEvent, EventStatus)
+│   │   └── user.ts                    # User/Admin types
+│   │
+│   └── utils/                         # General helpers
+│       ├── fetcher.ts                 # SWR/React Query fetcher
+│       └── authGuard.tsx              # Route protection wrapper
+│
+└── package.json
