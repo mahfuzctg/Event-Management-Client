@@ -1,14 +1,15 @@
-// src/types/event.ts
 
-export type EventStatus = "ongoing" | "upcoming" | "past";
+
+export type EventStatus = "Ongoing" | "Upcoming" | "Past";
 
 export interface IEvent {
   _id: string;
   title: string;
   description: string;
-  status?: EventStatus; // optional because we calculate dynamically
-  startDate: string;    // ISO string for start datetime
-  endDate: string;      // ISO string for end datetime
+  status: EventStatus;
+  date: string;      // ISO string
+  endDate: string;   // ISO string
   location: string;
   image?: string;
+ 
 }

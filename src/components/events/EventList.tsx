@@ -1,20 +1,38 @@
-import EventList from "@/components/events/EventList";
+"use client";
+
+import { useEffect, useState } from "react";
 import { getAllEvents } from "@/features/events/api";
+import { IEvent } from "@/types/event";
+import { getEventStatus, sortEventsChronologically } from "@/features/events/utils";
 
-export const revalidate = 60; // ISR: regenerate every 60 seconds
+export default function EventList() {
+  const [events, setEvents] = useState<IEvent[]>([]);
 
-export default async function EventsPage() {
-  // Fetch all events from backend
-  const events = await getAllEvents();
+  useEffect(() => {
+    const fetchEvents = async () => {
+      const data = await getAllEvents();
+      console.log("Events in component:", data); // 👈 Debug here
+      setEvents(sortEventsChronologically(data));
+    };
+    fetchEvents();
+  }, []);
+
+  if (!events.length) {
+    return <p>No events found.</p>;
+  }
 
   return (
-    <section className="max-w-7xl mx-auto px-4 py-12 flex flex-col space-y-8">
-      <h1 className="text-3xl font-bold mb-6">All Events</h1>
-      {events.length > 0 ? (
-        <EventList events={events} />
-      ) : (
-        <p>No events available.</p>
-      )}
-    </section>
+    <div>
+      {events.map((event) => (
+        <div key={event._id} className="border p-4 mb-2 rounded">
+          <h2 className="text-lg font-bold">{event.title}</h2>
+          <p>Status: {getEventStatus(event)}</p>
+          <p>
+            {new Date(event.startDate).toLocaleString()} -{" "}
+            {new Date(event.endDate).toLocaleString()}
+          </p>
+        </div>
+      ))}
+    </div>
   );
 }

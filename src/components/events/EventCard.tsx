@@ -1,4 +1,3 @@
-
 "use client";
 
 import React from "react";
@@ -12,6 +11,10 @@ interface EventCardProps {
 }
 
 const EventCard: React.FC<EventCardProps> = ({ event }) => {
+  // Format dates ONLY on the client
+  const start = dayjs(event.startDate).format("DD MMM YYYY, h:mm A");
+  const end = dayjs(event.endDate).format("h:mm A");
+
   return (
     <Card className="max-w-md mx-auto shadow hover:shadow-lg transition-shadow">
       {event.image && (
@@ -25,7 +28,7 @@ const EventCard: React.FC<EventCardProps> = ({ event }) => {
           <CardDescription>{event.description}</CardDescription>
         </CardHeader>
         <p className="text-sm mt-2">
-          <strong>Date:</strong> {dayjs(event.startDate).format("DD MMM YYYY, h:mm A")} - {dayjs(event.endDate).format("h:mm A")}
+          <strong>Date:</strong> {start} - {end}
         </p>
         <p className="text-sm">
           <strong>Location:</strong> {event.location}
