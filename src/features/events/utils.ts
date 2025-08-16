@@ -9,6 +9,7 @@ export const getEventStatus = (event: IEvent): EventStatus => {
   if (now.isBefore(start)) return "upcoming";
   if (now.isAfter(end)) return "past";
   return "ongoing";
+  
 };
 
 export const sortEventsChronologically = (events: IEvent[]): IEvent[] => {
