@@ -1,7 +1,8 @@
 import type { Metadata } from "next"
-import { ThemeProvider } from "@/providers/theme-provider"
+
 import { cn } from "@/lib/utils"
 import "./globals.css"
+import { ThemeProvider } from "@/providers/theme-provider"
 
 export const metadata: Metadata = {
   title: "Assignment Portal",
