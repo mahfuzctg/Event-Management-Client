@@ -8,7 +8,7 @@ export default async function EventsPage() {
   let events = [];
 
   try {
-    events = await getAllEvents(); // fetch server-side
+    events = await getAllEvents(); 
   } catch (error) {
     console.error("Failed to fetch events:", error);
     events = [];
@@ -20,7 +20,7 @@ export default async function EventsPage() {
     <section className="max-w-7xl mx-auto px-4 py-12 flex flex-col space-y-8">
       <h1 className="text-3xl font-bold mb-6">All Events</h1>
 
-      {eventArray.length > 0 ? (
+      {eventArray?.length > 0 ? (
         <EventsSection events={eventArray} />
       ) : (
         <NoData message="No events available at the moment. Please check back later!" />

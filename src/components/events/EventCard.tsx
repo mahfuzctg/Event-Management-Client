@@ -6,7 +6,8 @@ import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import Image from "next/image";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { CalendarDays } from "lucide-react";
 
 dayjs.extend(utc);
 
@@ -15,64 +16,67 @@ interface EventCardProps {
   status: "upcoming" | "ongoing" | "past";
 }
 
-const DEFAULT_IMAGE = "/default-event.jpg"; // Place a default image in public folder
+const DEFAULT_IMAGE =
+  "https://res.cloudinary.com/dxv10xebz/image/upload/v1739138568/default-event-placeholder.jpg";
 
 const EventCard: React.FC<EventCardProps> = ({ event, status }) => {
   const start = dayjs.utc(event.date).format("DD MMM YYYY, h:mm A");
   const end = dayjs.utc(event.endDate).format("h:mm A");
 
-  const statusColor =
-    status === "upcoming" ? "default" : status === "ongoing" ? "secondary" : "outline";
+  // Full background color for badge based on status using ShadCN palette
+  const statusClass =
+    status === "upcoming"
+      ? "bg-rose-500 text-white"
+      : status === "ongoing"
+      ? "bg-emerald-500 text-white"
+      : "bg-gray-500 text-white";
 
-  const [showFullDescription, setShowFullDescription] = useState(false);
-  const [imgSrc, setImgSrc] = useState(event.image || DEFAULT_IMAGE);
-
-  const toggleDescription = () => setShowFullDescription((prev) => !prev);
+  const [showFullDesc, setShowFullDesc] = useState(false);
 
   return (
-    <Card className="flex flex-col rounded-3xl shadow-lg hover:shadow-2xl transition-all overflow-hidden bg-gradient-to-br from-white/80 to-white/60 dark:from-gray-800/80 dark:to-gray-900/70">
-      
-      {/* Event Image */}
-      <div className="relative h-52 w-full md:h-64 lg:h-72">
+    <Card className="flex flex-col rounded-2xl shadow-lg hover:shadow-2xl transition-all overflow-hidden bg-white dark:bg-gray-900">
+      <div className="relative h-52 w-full">
         <Image
-          src={imgSrc}
+          src={event.image || DEFAULT_IMAGE}
           alt={event.title}
           fill
           className="object-cover"
-          onError={() => setImgSrc(DEFAULT_IMAGE)}
+          onError={(e) => (e.currentTarget.src = DEFAULT_IMAGE)}
           priority
         />
-        {/* Status badge overlay */}
-        <Badge
-          variant={statusColor}
-          className="absolute top-3 right-3 uppercase px-3 py-1 text-xs"
+        <span
+          className={`absolute top-4 left-4 px-3 py-1 rounded-full text-xs font-semibold shadow-md ${statusClass}`}
         >
-          {status}
-        </Badge>
+          {status.toUpperCase()}
+        </span>
       </div>
 
       <CardHeader className="space-y-2 p-4">
-        <CardTitle className="text-xl font-bold line-clamp-1">{event.title}</CardTitle>
-
+        <CardTitle className="text-lg md:text-xl font-semibold line-clamp-1">{event.title}</CardTitle>
         <CardDescription className="text-sm text-muted-foreground">
-          {showFullDescription ? event.description : event.description.slice(0, 120) + (event.description.length > 120 ? "..." : "")}
-          {event.description.length > 120 && (
-            <button
-              className="ml-2 text-rose-500 font-medium hover:underline"
-              onClick={toggleDescription}
-            >
-              {showFullDescription ? "Read Less" : "Read More"}
-            </button>
-          )}
+          {showFullDesc ? event.description : `${event.description.slice(0, 100)}...`}
         </CardDescription>
+        {event.description.length > 100 && (
+          <Button
+            variant="ghost"
+            size="sm"
+            className="text-rose-500 hover:bg-rose-100 dark:hover:bg-rose-900"
+            onClick={() => setShowFullDesc(!showFullDesc)}
+          >
+            {showFullDesc ? "Read Less" : "Read More"}
+          </Button>
+        )}
       </CardHeader>
 
       <CardContent className="mt-auto space-y-2 text-sm p-4">
-        <p>
-          <span className="font-medium">Date:</span> {start} - {end}
+        <p className="flex items-center gap-1 text-gray-600 dark:text-gray-300">
+          <CalendarDays className="w-4 h-4 text-rose-500" />
+          <span>
+            {start} - {end}
+          </span>
         </p>
-        <p>
-          <span className="font-medium">Location:</span> {event.location || "TBA"}
+        <p className="text-gray-700 dark:text-gray-200">
+          <span className="font-medium">Location:</span> {event.location}
         </p>
       </CardContent>
     </Card>
