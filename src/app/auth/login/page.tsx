@@ -1,20 +1,22 @@
 // File: src/app/auth/login/page.tsx
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import Cookies from "js-cookie";
 import toast from "react-hot-toast";
 import { loginAdmin } from "@/features/auth/api";
+import { useAuth } from "@/providers/AuthContext";
 
 const LoginPage = () => {
   const router = useRouter();
+  const { setLoggedIn } = useAuth(); // <- use auth context
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [year, setYear] = useState<number>(new Date().getFullYear());
+  const [year] = useState<number>(new Date().getFullYear());
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -27,11 +29,14 @@ const LoginPage = () => {
       // Save JWT token in cookie
       Cookies.set("auth_token", data.token, { expires: 1 });
 
+      // Update auth context so Navbar reacts immediately
+      setLoggedIn(true);
+
       // Show success toast
       toast.success("Login successful! Redirecting to dashboard...");
 
-      // Redirect to dashboard after short delay
-      setTimeout(() => router.push("/dashboard"), 1000);
+      // Redirect to dashboard
+      router.push("/dashboard");
     } catch (err: any) {
       setError(err.message || "Something went wrong");
     } finally {

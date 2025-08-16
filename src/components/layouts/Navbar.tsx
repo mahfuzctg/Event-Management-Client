@@ -1,4 +1,4 @@
-// File: src/components/layouts/Navbar.tsx
+
 "use client";
 
 import { useTheme } from "next-themes";
@@ -9,7 +9,8 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Cookies from "js-cookie";
 import toast from "react-hot-toast";
-import { useAuth } from "@/context/AuthContext";
+import { useAuth } from "@/providers/AuthContext";
+
 
 export default function Navbar() {
   const { theme, setTheme } = useTheme();
