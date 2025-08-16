@@ -1,3 +1,4 @@
+// File: src/components/layouts/Navbar.tsx
 "use client";
 
 import { useTheme } from "next-themes";
@@ -5,30 +6,27 @@ import { Button } from "@/components/ui/button";
 import { Moon, Sun, CalendarDays, LogOut } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import Cookies from "js-cookie";
 import { useRouter } from "next/navigation";
+import Cookies from "js-cookie";
 import toast from "react-hot-toast";
+import { useAuth } from "@/context/AuthContext";
 
 export default function Navbar() {
   const { theme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const { isLoggedIn, setLoggedIn } = useAuth();
   const router = useRouter();
 
-  useEffect(() => {
-    setMounted(true);
-    const token = Cookies.get("auth_token");
-    setIsLoggedIn(!!token);
-  }, []);
+  useEffect(() => setMounted(true), []);
 
   const handleLogout = () => {
     Cookies.remove("auth_token");
-    setIsLoggedIn(false);
+    setLoggedIn(false);
     toast.success("Logged out successfully");
     router.push("/auth/login");
   };
 
-  if (!mounted) return null; // prevent SSR mismatch
+  if (!mounted) return null;
 
   return (
     <nav className="flex justify-between items-center w-full px-6 py-4 border-b bg-background/80 backdrop-blur-md sticky top-0 z-50">

@@ -1,4 +1,5 @@
-import { fetcher } from "@/lib/api-client";
+
+import { API_BASE } from "@/lib/api-client";
 
 interface LoginPayload {
   email: string;
@@ -20,14 +21,15 @@ interface LoginResponse {
  * Admin login API
  */
 export const loginAdmin = async (data: LoginPayload): Promise<LoginResponse> => {
-  const response = await fetch("http://localhost:5000/api/auth/login", {
+  const response = await fetch(`${API_BASE}/auth/login`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(data),
   });
 
   if (!response.ok) {
-    throw new Error("Invalid credentials");
+    const errData = await response.json().catch(() => ({}));
+    throw new Error(errData.message || "Invalid credentials");
   }
 
   return response.json();

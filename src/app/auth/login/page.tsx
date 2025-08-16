@@ -1,23 +1,20 @@
+// File: src/app/auth/login/page.tsx
 "use client";
 
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Cookies from "js-cookie";
 import toast from "react-hot-toast";
+import { loginAdmin } from "@/features/auth/api";
 
 const LoginPage = () => {
   const router = useRouter();
-
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [year, setYear] = useState<number | null>(null);
-
-  useEffect(() => {
-    setYear(new Date().getFullYear());
-  }, []);
+  const [year, setYear] = useState<number>(new Date().getFullYear());
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -25,30 +22,19 @@ const LoginPage = () => {
     setError(null);
 
     try {
-      const res = await fetch("http://localhost:5000/api/auth/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
-      });
-
-      const data = await res.json();
-
-      if (!res.ok || !data.success) {
-        setError(data.message || "Invalid credentials");
-        setLoading(false);
-        return;
-      }
+      const data = await loginAdmin({ email, password });
 
       // Save JWT token in cookie
-      Cookies.set("auth_token", data.token, { expires: 1 }); // 1 day
+      Cookies.set("auth_token", data.token, { expires: 1 });
 
       // Show success toast
       toast.success("Login successful! Redirecting to dashboard...");
 
-      // Redirect to dashboard after small delay
+      // Redirect to dashboard after short delay
       setTimeout(() => router.push("/dashboard"), 1000);
     } catch (err: any) {
       setError(err.message || "Something went wrong");
+    } finally {
       setLoading(false);
     }
   };
@@ -112,11 +98,9 @@ const LoginPage = () => {
           </button>
         </form>
 
-        {year && (
-          <div className="text-center text-sm text-muted-foreground mt-4">
-            &copy; {year} Event Management System
-          </div>
-        )}
+        <div className="text-center text-sm text-muted-foreground mt-4">
+          &copy; {year} Event Management System
+        </div>
       </div>
     </div>
   );
