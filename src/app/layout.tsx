@@ -1,24 +1,24 @@
-import type { Metadata } from "next"
-
-import { cn } from "@/lib/utils"
+// src/app/layout.tsx
 import "./globals.css"
-import { ThemeProvider } from "@/providers/theme-provider"
+import { ThemeProvider } from "next-themes"
+import Navbar from "@/components/layouts/Navbar"
 
-export const metadata: Metadata = {
-  title: "Assignment Portal",
-  description: "Minimalist professional assignment portal",
+export const metadata = {
+  title: "Event Management System",
+  description: "Browse and manage events easily",
 }
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode
+}) {
   return (
-    <html lang="en" suppressHydrationWarning>
-      <body
-        className={cn(
-          "min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100 dark:from-gray-950 dark:via-gray-900 dark:to-black text-foreground antialiased"
-        )}
-      >
-        <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-          {children}
+    <html lang="en">
+      <body className="bg-background text-foreground transition-colors duration-300">
+        <ThemeProvider attribute="class" defaultTheme="light" enableSystem>
+          <Navbar />
+          <main>{children}</main>
         </ThemeProvider>
       </body>
     </html>
