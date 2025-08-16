@@ -1,11 +1,9 @@
-
-import Hero from "@/components/hero/Hero"
+import Hero from "@/components/hero/Hero";
 
 export default function HomePage() {
   return (
     <div className="flex flex-col">
       <Hero />
-     
     </div>
-  )
+  );
 }
