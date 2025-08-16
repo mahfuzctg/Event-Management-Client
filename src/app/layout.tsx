@@ -2,6 +2,8 @@
 import "./globals.css"
 import { ThemeProvider } from "next-themes"
 import Navbar from "@/components/layouts/Navbar"
+import Footer from "@/components/layouts/Footer"
+
 
 export const metadata = {
   title: "Event Management System",
@@ -15,10 +17,11 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className="bg-background text-foreground transition-colors duration-300">
+      <body className="bg-background text-foreground transition-colors duration-300 flex flex-col min-h-screen">
         <ThemeProvider attribute="class" defaultTheme="light" enableSystem>
           <Navbar />
-          <main>{children}</main>
+          <main className="flex-grow">{children}</main>
+          <Footer />
         </ThemeProvider>
       </body>
     </html>
