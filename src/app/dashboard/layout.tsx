@@ -1,4 +1,8 @@
+// src/app/dashboard/layout.tsx
+"use client";
 
+import AuthGuard from "@/utils/authGuard"; 
+import { Toaster } from "react-hot-toast";
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -10,6 +14,9 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           <main className="p-6 flex-1">{children}</main>
         </div>
       </div>
+
+      {/* Toast notifications */}
+      <Toaster position="top-right" />
     </AuthGuard>
   );
 }

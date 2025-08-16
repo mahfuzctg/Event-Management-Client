@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Cookies from "js-cookie";
+import toast from "react-hot-toast";
 
 const LoginPage = () => {
   const router = useRouter();
@@ -39,10 +40,13 @@ const LoginPage = () => {
       }
 
       // Save JWT token in cookie
-      Cookies.set("auth_token", data.token, { expires: 1 }); // expires in 1 day
+      Cookies.set("auth_token", data.token, { expires: 1 }); // 1 day
 
-      // Redirect to dashboard
-      router.push("/dashboard");
+      // Show success toast
+      toast.success("Login successful! Redirecting to dashboard...");
+
+      // Redirect to dashboard after small delay
+      setTimeout(() => router.push("/dashboard"), 1000);
     } catch (err: any) {
       setError(err.message || "Something went wrong");
       setLoading(false);
