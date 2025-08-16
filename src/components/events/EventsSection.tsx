@@ -3,24 +3,34 @@
 import { IEvent } from "@/types/event";
 import EventCard from "./EventCard";
 import { getEventStatus, sortEventsChronologically } from "@/features/events/utils";
+import EventsSkeleton from "./EventsSkeleton";
+
 
 interface EventsSectionProps {
   events: IEvent[];
+  isLoading?: boolean;
 }
 
-export default function EventsSection({ events }: EventsSectionProps) {
-  if (!events.length) {
-    return <p>No events found.</p>;
+export default function EventsSection({ events, isLoading }: EventsSectionProps) {
+  if (isLoading) {
+    return <EventsSkeleton />;
+  }
+
+  if (!events?.length) {
+    return <p className="text-gray-500">No events found.</p>;
   }
 
   const sortedEvents = sortEventsChronologically(events);
 
-  // Group events by status
   const ongoingEvents = sortedEvents.filter((e) => getEventStatus(e) === "Ongoing");
   const upcomingEvents = sortedEvents.filter((e) => getEventStatus(e) === "Upcoming");
   const pastEvents = sortedEvents.filter((e) => getEventStatus(e) === "Past");
 
-  const renderSection = (title: string, events: IEvent[], status: "ongoing" | "upcoming" | "past") => (
+  const renderSection = (
+    title: string,
+    events: IEvent[],
+    status: "ongoing" | "upcoming" | "past"
+  ) => (
     <div className="space-y-6">
       <h2 className="text-2xl font-semibold">{title}</h2>
       {events.length > 0 ? (
