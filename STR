@@ -33,6 +33,11 @@ frontend/
 │   │   │   ├── EventList.tsx
 │   │   │   ├── EventForm.tsx          # Reused for create & edit
 │   │   │   └── EventFilters.tsx
+│   │   ├── dashboard/events/                    # Dashboar/Event UI
+│   │   │   ├── EventCard.tsx
+│   │   │   ├── EventList.tsx
+│   │   │   ├── EventForm.tsx          # Reused for create & edit
+│   │   │   └── EventFilters.tsx
 │   │   └── common/                    # Generic reusable UI
 │   │       ├── Button.tsx
 │   │       ├── LoadingSpinner.tsx
