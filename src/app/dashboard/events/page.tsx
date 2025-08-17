@@ -1,13 +1,21 @@
 "use client";
 
 import Link from "next/link";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input"; // ShadCN input
 import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import EventCard from "@/components/events/EventCard";
 import { useEvents, useEventActions } from "@/features/events/hooks";
 import { getToken } from "@/features/auth/utils";
-import EventCard from "@/components/events/EventCard";
 import { getEventStatus } from "@/features/events/utils";
+import { toast } from "react-hot-toast";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "@/components/ui/dialog";
 
 export default function DashboardEventsPage() {
   const token = getToken() || "";
@@ -15,9 +23,31 @@ export default function DashboardEventsPage() {
   const { removeEvent } = useEventActions(token);
   const [search, setSearch] = useState("");
 
+  // Modal state
+  const [isOpen, setIsOpen] = useState(false);
+  const [selectedEventId, setSelectedEventId] = useState<string | null>(null);
+
   const filteredEvents = events?.filter((e) =>
     e.title.toLowerCase().includes(search.toLowerCase())
   );
+
+  const handleDeleteClick = (id: string) => {
+    setSelectedEventId(id);
+    setIsOpen(true);
+  };
+
+  const handleConfirmDelete = async () => {
+    if (!selectedEventId) return;
+    try {
+      await removeEvent(selectedEventId);
+      toast.success("Event deleted successfully!");
+    } catch (err: any) {
+      toast.error(err?.message || "Failed to delete event!");
+    } finally {
+      setIsOpen(false);
+      setSelectedEventId(null);
+    }
+  };
 
   if (isLoading)
     return <p className="p-6 text-center text-gray-500">Loading events...</p>;
@@ -67,7 +97,7 @@ export default function DashboardEventsPage() {
                 <Button
                   variant="destructive"
                   className="flex-1 w-full sm:w-auto"
-                  onClick={() => removeEvent(event._id)}
+                  onClick={() => handleDeleteClick(event._id)}
                 >
                   Delete
                 </Button>
@@ -76,6 +106,26 @@ export default function DashboardEventsPage() {
           );
         })}
       </div>
+
+      {/* Confirmation Modal */}
+      <Dialog open={isOpen} onOpenChange={setIsOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Confirm Delete</DialogTitle>
+          </DialogHeader>
+          <p className="py-2">
+            Are you sure you want to delete this event? This action cannot be undone.
+          </p>
+          <DialogFooter className="flex justify-end gap-2">
+            <Button variant="outline" onClick={() => setIsOpen(false)}>
+              Cancel
+            </Button>
+            <Button variant="destructive" onClick={handleConfirmDelete}>
+              Delete
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
