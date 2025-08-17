@@ -2,7 +2,7 @@
 
 import { useTheme } from "next-themes";
 import { Button } from "@/components/ui/button";
-import { Moon, Sun, CalendarDays, LogOut } from "lucide-react";
+import { Moon, Sun, CalendarDays, LogOut, Menu, X } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
@@ -13,6 +13,7 @@ import { useAuth } from "@/providers/AuthContext";
 export default function Navbar() {
   const { theme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const { isLoggedIn, setLoggedIn } = useAuth();
   const router = useRouter();
 
@@ -27,8 +28,53 @@ export default function Navbar() {
 
   if (!mounted) return null;
 
+  const navLinks = (
+    <>
+      <Link
+        href="/events"
+        className="text-sm font-medium hover:text-rose-500 transition-colors"
+        onClick={() => setMobileMenuOpen(false)}
+      >
+        Events
+      </Link>
+
+      {isLoggedIn && (
+        <Link
+          href="/dashboard"
+          className="text-sm font-medium hover:text-rose-500 transition-colors"
+          onClick={() => setMobileMenuOpen(false)}
+        >
+          Dashboard
+        </Link>
+      )}
+
+      {isLoggedIn ? (
+        <Button
+          variant="outline"
+          size="sm"
+          className="flex items-center gap-2"
+          onClick={() => {
+            handleLogout();
+            setMobileMenuOpen(false);
+          }}
+        >
+          <LogOut size={16} /> Logout
+        </Button>
+      ) : (
+        <Link
+          href="/auth/login"
+          className="text-sm font-medium hover:text-rose-500 transition-colors"
+          onClick={() => setMobileMenuOpen(false)}
+        >
+          Admin Login
+        </Link>
+      )}
+    </>
+  );
+
   return (
-    <nav className="flex justify-between items-center w-full px-6 py-4 border-b bg-background/80 backdrop-blur-md sticky top-0 z-50">
+    <nav className="w-full bg-background/80 backdrop-blur-md sticky top-0 z-50 border-b px-4 sm:px-6 py-4 flex items-center justify-between">
+      {/* Logo */}
       <Link
         href="/"
         className="flex items-center gap-2 font-bold text-xl bg-gradient-to-r from-rose-500 to-pink-500 bg-clip-text text-transparent"
@@ -37,41 +83,9 @@ export default function Navbar() {
         Event Manager
       </Link>
 
-      <div className="flex items-center gap-6">
-        <Link
-          href="/events"
-          className="text-sm font-medium hover:text-rose-500 transition-colors"
-        >
-          Events
-        </Link>
-
-        {/* Dashboard link only visible if logged in */}
-        {isLoggedIn && (
-          <Link
-            href="/dashboard"
-            className="text-sm font-medium hover:text-rose-500 transition-colors"
-          >
-            Dashboard
-          </Link>
-        )}
-
-        {isLoggedIn ? (
-          <Button
-            variant="outline"
-            size="sm"
-            className="flex items-center gap-2"
-            onClick={handleLogout}
-          >
-            <LogOut size={16} /> Logout
-          </Button>
-        ) : (
-          <Link
-            href="/auth/login"
-            className="text-sm font-medium hover:text-rose-500 transition-colors"
-          >
-            Admin Login
-          </Link>
-        )}
+      {/* Desktop Menu */}
+      <div className="hidden md:flex items-center gap-6">
+        {navLinks}
 
         <Button
           variant="outline"
@@ -86,6 +100,38 @@ export default function Navbar() {
           )}
         </Button>
       </div>
+
+      {/* Mobile Hamburger */}
+      <div className="md:hidden flex items-center gap-2">
+        <Button
+          variant="outline"
+          size="icon"
+          onClick={() => setTheme(theme === "light" ? "dark" : "light")}
+          className="rounded-full border-muted-foreground/30 hover:bg-rose-500/10"
+        >
+          {theme === "light" ? (
+            <Moon size={18} className="text-rose-500" />
+          ) : (
+            <Sun size={18} className="text-rose-400" />
+          )}
+        </Button>
+
+        <Button
+          variant="outline"
+          size="icon"
+          onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+          className="rounded-md border-muted-foreground/30"
+        >
+          {mobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
+        </Button>
+      </div>
+
+      {/* Mobile Menu Dropdown */}
+      {mobileMenuOpen && (
+        <div className="absolute top-full left-0 w-full bg-background/95 backdrop-blur-md border-t md:hidden flex flex-col items-center py-4 gap-4">
+          {navLinks}
+        </div>
+      )}
     </nav>
   );
 }
