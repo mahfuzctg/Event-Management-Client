@@ -1,4 +1,3 @@
-// File: src/context/AuthContext.tsx
 "use client";
 
 import { createContext, useContext, useEffect, useState, ReactNode } from "react";
@@ -16,11 +15,17 @@ const AuthContext = createContext<AuthContextType>({
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
     const token = Cookies.get("auth_token");
     setIsLoggedIn(!!token);
+    setMounted(true);
   }, []);
+
+  if (!mounted) {
+    return null; // prevents SSR mismatch
+  }
 
   return (
     <AuthContext.Provider value={{ isLoggedIn, setLoggedIn: setIsLoggedIn }}>

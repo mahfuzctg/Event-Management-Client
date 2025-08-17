@@ -5,7 +5,13 @@ import { IEvent } from "@/types/event";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import Image from "next/image";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+} from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { CalendarDays, MapPin } from "lucide-react";
 
@@ -33,18 +39,22 @@ const EventCard: React.FC<EventCardProps> = ({ event, status }) => {
 
   const [showFullDesc, setShowFullDesc] = useState(false);
 
+  // ✅ Safely handle image
+  const safeImage =
+    event.image && event.image.startsWith("http") ? event.image : DEFAULT_IMAGE;
+
   return (
     <Card className="flex flex-col rounded-2xl shadow-lg hover:shadow-2xl transition-all overflow-hidden bg-white dark:bg-gray-900">
       {/* Event Image */}
       <div className="relative h-52 w-full">
         <Image
-          src={event.image || DEFAULT_IMAGE}
-          alt={event.title}
+          src={safeImage}
+          alt={event.title || "Event image"}
           fill
           className="object-cover"
-          onError={(e) => (e.currentTarget.src = DEFAULT_IMAGE)}
           priority
         />
+
         {/* Status Badge */}
         <span
           className={`absolute top-4 left-4 px-3 py-1 rounded-full text-xs font-semibold shadow-md ${statusClass}`}
@@ -55,9 +65,13 @@ const EventCard: React.FC<EventCardProps> = ({ event, status }) => {
 
       {/* Event Title & Description */}
       <CardHeader className="space-y-2 p-4">
-        <CardTitle className="text-lg md:text-xl font-semibold line-clamp-1">{event.title}</CardTitle>
+        <CardTitle className="text-lg md:text-xl font-semibold line-clamp-1">
+          {event.title}
+        </CardTitle>
         <CardDescription className="text-sm text-muted-foreground">
-          {showFullDesc ? event.description : `${event.description.slice(0, 100)}...`}
+          {showFullDesc
+            ? event.description
+            : `${event.description.slice(0, 100)}...`}
         </CardDescription>
 
         {/* Read More / Read Less */}
@@ -77,11 +91,15 @@ const EventCard: React.FC<EventCardProps> = ({ event, status }) => {
       <CardContent className="mt-auto space-y-2 text-sm p-4">
         <p className="flex items-center gap-1 text-gray-600 dark:text-gray-300">
           <CalendarDays className="w-4 h-4 text-rose-500" />
-          <span>{start} - {end}</span>
+          <span>
+            {start} - {end}
+          </span>
         </p>
         <p className="flex items-center gap-1 text-gray-700 dark:text-gray-200">
           <MapPin className="w-4 h-4 text-rose-500" />
-          <span><span className="font-medium">Location:</span> {event.location}</span>
+          <span>
+            <span className="font-medium">Location:</span> {event.location}
+          </span>
         </p>
       </CardContent>
     </Card>

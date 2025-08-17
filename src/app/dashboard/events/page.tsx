@@ -1,12 +1,10 @@
 "use client";
 
-import Link from "next/link";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import EventCard from "@/components/events/EventCard";
 import { useEvents, useEventActions } from "@/features/events/hooks";
-import { getToken } from "@/features/auth/utils";
 import { getEventStatus } from "@/features/events/utils";
 import { toast } from "react-hot-toast";
 import {
@@ -17,49 +15,83 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog";
 import EventsSkeleton from "@/components/events/EventsSkeleton";
+import EventForm, { EventFormData } from "@/components/events/EventForm";
+import { getToken } from "@/features/auth/utils";
+import { createEvent } from "@/features/events/api";
 
 export default function DashboardEventsPage() {
   const token = getToken() || "";
-  const { events, isLoading, error } = useEvents();
+  const { events, isLoading, error, refetch } = useEvents();
   const { removeEvent } = useEventActions(token);
   const [search, setSearch] = useState("");
 
-  // Modal state
-  const [isOpen, setIsOpen] = useState(false);
+  // Delete modal state
+  const [isDeleteOpen, setIsDeleteOpen] = useState(false);
   const [selectedEventId, setSelectedEventId] = useState<string | null>(null);
+
+  // Create modal state
+  const [isCreateOpen, setIsCreateOpen] = useState(false);
+  const [creating, setCreating] = useState(false);
 
   const filteredEvents = events?.filter((e) =>
     e.title.toLowerCase().includes(search.toLowerCase())
   );
 
+  // Handle Delete
   const handleDeleteClick = (id: string) => {
     setSelectedEventId(id);
-    setIsOpen(true);
+    setIsDeleteOpen(true);
   };
 
   const handleConfirmDelete = async () => {
     if (!selectedEventId) return;
     try {
+      console.log("Deleting event with ID:", selectedEventId);
       await removeEvent(selectedEventId);
       toast.success("Event deleted successfully!");
+      refetch();
     } catch (err: any) {
+      console.error("Error deleting event:", err);
       toast.error(err?.message || "Failed to delete event!");
     } finally {
-      setIsOpen(false);
+      setIsDeleteOpen(false);
       setSelectedEventId(null);
     }
   };
 
-if (isLoading) return <EventsSkeleton />;
-if (error)
-  return (
-    <p className="p-6 text-center text-red-500">
-      Failed to load events. Please try again.
-    </p>
-  );
-if (!events || events.length === 0)
-  return <p className="p-6 text-center text-gray-500">No events found.</p>;
+  // Handle Create
+  const handleCreate = async (data: EventFormData) => {
+    try {
+      setCreating(true);
+      console.log("Creating event with payload:", data);
+      const response = await createEvent(data, token);
+      console.log("Event creation response:", response);
+      toast.success("Event created successfully!");
+      setIsCreateOpen(false);
+      refetch(); // refresh event list
+    } catch (err: any) {
+      console.error("Error creating event:", err);
+      // If backend sends response data, log it
+      if (err.response) {
+        console.error("Backend error response:", err.response);
+      }
+      toast.error(err?.message || "Failed to create event");
+    } finally {
+      setCreating(false);
+    }
+  };
 
+  if (isLoading) return <EventsSkeleton />;
+  if (error) {
+    console.error("Error fetching events:", error);
+    return (
+      <p className="p-6 text-center text-red-500">
+        Failed to load events. Please try again.
+      </p>
+    );
+  }
+  if (!events || events.length === 0)
+    return <p className="p-6 text-center text-gray-500">No events found.</p>;
 
   return (
     <div className="p-6 space-y-6">
@@ -73,9 +105,9 @@ if (!events || events.length === 0)
             onChange={(e) => setSearch(e.target.value)}
             className="w-full sm:w-64"
           />
-          <Link href="/dashboard/events/create">
-            <Button className="w-full sm:w-auto">Create Event</Button>
-          </Link>
+          <Button className="w-full sm:w-auto" onClick={() => setIsCreateOpen(true)}>
+            Create Event
+          </Button>
         </div>
       </div>
 
@@ -90,11 +122,15 @@ if (!events || events.length === 0)
             >
               <EventCard event={event} status={status} />
               <div className="mt-4 flex gap-2 flex-wrap">
-                <Link href={`/dashboard/events/${event._id}`} className="flex-1">
-                  <Button variant="outline" className="w-full sm:w-auto">
-                    Edit
-                  </Button>
-                </Link>
+                <Button
+                  variant="outline"
+                  className="flex-1 w-full sm:w-auto"
+                  onClick={() =>
+                    (window.location.href = `/dashboard/events/${event._id}`)
+                  }
+                >
+                  Edit
+                </Button>
                 <Button
                   variant="destructive"
                   className="flex-1 w-full sm:w-auto"
@@ -108,8 +144,8 @@ if (!events || events.length === 0)
         })}
       </div>
 
-      {/* Confirmation Modal */}
-      <Dialog open={isOpen} onOpenChange={setIsOpen}>
+      {/* Delete Confirmation Modal */}
+      <Dialog open={isDeleteOpen} onOpenChange={setIsDeleteOpen}>
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Confirm Delete</DialogTitle>
@@ -118,11 +154,28 @@ if (!events || events.length === 0)
             Are you sure you want to delete this event? This action cannot be undone.
           </p>
           <DialogFooter className="flex justify-end gap-2">
-            <Button variant="outline" onClick={() => setIsOpen(false)}>
+            <Button variant="outline" onClick={() => setIsDeleteOpen(false)}>
               Cancel
             </Button>
             <Button variant="destructive" onClick={handleConfirmDelete}>
               Delete
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Create Event Modal */}
+      <Dialog open={isCreateOpen} onOpenChange={setIsCreateOpen}>
+        <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle>Create New Event</DialogTitle>
+          </DialogHeader>
+          <div className="py-2">
+            <EventForm onSubmit={handleCreate} loading={creating} />
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setIsCreateOpen(false)}>
+              Cancel
             </Button>
           </DialogFooter>
         </DialogContent>

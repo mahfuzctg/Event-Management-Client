@@ -1,6 +1,20 @@
 import { API_BASE } from "@/lib/api-client";
 import { IEvent } from "@/types/event";
 
+// Helper: Ensure ISO string format
+const normalizeDates = (payload: Partial<IEvent>) => {
+  const copy = { ...payload };
+
+  if (copy.date) {
+    copy.date = new Date(copy.date).toISOString(); // ensures "2025-08-02T13:33:00.000Z"
+  }
+  if (copy.endDate) {
+    copy.endDate = new Date(copy.endDate).toISOString();
+  }
+
+  return copy;
+};
+
 // -------------------- READ --------------------
 
 // Get all events
@@ -8,7 +22,6 @@ export const getAllEvents = async (): Promise<IEvent[]> => {
   const res = await fetch(`${API_BASE}/events`, { cache: "no-store" });
   if (!res.ok) throw new Error("Failed to fetch events");
   const data = await res.json();
-  // Backend returns { success: true, events: [...] }
   return data?.events || [];
 };
 
@@ -17,7 +30,7 @@ export const getEventById = async (id: string): Promise<IEvent> => {
   const res = await fetch(`${API_BASE}/events/${id}`, { cache: "no-store" });
   if (!res.ok) throw new Error("Failed to fetch event");
   const data = await res.json();
-  return data?.event; // backend returns { success: true, event: {...} }
+  return data?.event;
 };
 
 // -------------------- CREATE --------------------
@@ -25,22 +38,31 @@ export const createEvent = async (
   payload: Partial<IEvent>,
   token: string
 ): Promise<IEvent> => {
+  const body = normalizeDates(payload);
+
+  console.log("📤 Sending createEvent payload:", body);
+
   const res = await fetch(`${API_BASE}/events`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
       Authorization: `Bearer ${token}`,
     },
-    body: JSON.stringify(payload),
+    body: JSON.stringify(body),
   });
 
+  const data = await res.json().catch(() => ({}));
+
   if (!res.ok) {
-    const errData = await res.json().catch(() => ({}));
-    throw new Error(errData.message || "Failed to create event");
+    console.error("❌ Create Event Error Response:", data);
+    throw new Error(
+      data.message ||
+        Object.values(data.errors || {}).map((e: any) => e.message).join(", ") ||
+        "Failed to create event"
+    );
   }
 
-  const data = await res.json();
-  return data?.event; // backend returns { success: true, event: {...} }
+  return data?.event;
 };
 
 // -------------------- UPDATE --------------------
@@ -49,22 +71,31 @@ export const updateEvent = async (
   payload: Partial<IEvent>,
   token: string
 ): Promise<IEvent> => {
+  const body = normalizeDates(payload);
+
+  console.log("📤 Sending updateEvent payload:", body);
+
   const res = await fetch(`${API_BASE}/events/${id}`, {
     method: "PUT",
     headers: {
       "Content-Type": "application/json",
       Authorization: `Bearer ${token}`,
     },
-    body: JSON.stringify(payload),
+    body: JSON.stringify(body),
   });
 
+  const data = await res.json().catch(() => ({}));
+
   if (!res.ok) {
-    const errData = await res.json().catch(() => ({}));
-    throw new Error(errData.message || "Failed to update event");
+    console.error("❌ Update Event Error Response:", data);
+    throw new Error(
+      data.message ||
+        Object.values(data.errors || {}).map((e: any) => e.message).join(", ") ||
+        "Failed to update event"
+    );
   }
 
-  const data = await res.json();
-  return data?.event; // backend returns { success: true, event: {...} }
+  return data?.event;
 };
 
 // -------------------- DELETE --------------------
@@ -77,11 +108,16 @@ export const deleteEvent = async (
     headers: { Authorization: `Bearer ${token}` },
   });
 
+  const data = await res.json().catch(() => ({}));
+
   if (!res.ok) {
-    const errData = await res.json().catch(() => ({}));
-    throw new Error(errData.message || "Failed to delete event");
+    console.error("❌ Delete Event Error Response:", data);
+    throw new Error(
+      data.message ||
+        Object.values(data.errors || {}).map((e: any) => e.message).join(", ") ||
+        "Failed to delete event"
+    );
   }
 
-  const data = await res.json();
-  return data; // backend returns { success: true, event: {...} } (for DELETE you can ignore event)
+  return data;
 };
