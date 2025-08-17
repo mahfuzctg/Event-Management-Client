@@ -72,7 +72,7 @@ npm run dev
 
 ## Thank You
 
-Thank you for visiting the **Event Management System** server repository.  
+Thank you for visiting the **Event Management System** client repository.  
 Your feedback, contributions, and suggestions are always welcome! 🙏
 
 
