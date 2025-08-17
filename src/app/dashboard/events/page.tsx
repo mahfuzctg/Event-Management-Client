@@ -16,6 +16,7 @@ import {
   DialogTitle,
   DialogFooter,
 } from "@/components/ui/dialog";
+import EventsSkeleton from "@/components/events/EventsSkeleton";
 
 export default function DashboardEventsPage() {
   const token = getToken() || "";
@@ -49,16 +50,16 @@ export default function DashboardEventsPage() {
     }
   };
 
-  if (isLoading)
-    return <p className="p-6 text-center text-gray-500">Loading events...</p>;
-  if (error)
-    return (
-      <p className="p-6 text-center text-red-500">
-        Failed to load events. Please try again.
-      </p>
-    );
-  if (!events || events.length === 0)
-    return <p className="p-6 text-center text-gray-500">No events found.</p>;
+if (isLoading) return <EventsSkeleton />;
+if (error)
+  return (
+    <p className="p-6 text-center text-red-500">
+      Failed to load events. Please try again.
+    </p>
+  );
+if (!events || events.length === 0)
+  return <p className="p-6 text-center text-gray-500">No events found.</p>;
+
 
   return (
     <div className="p-6 space-y-6">
@@ -89,7 +90,7 @@ export default function DashboardEventsPage() {
             >
               <EventCard event={event} status={status} />
               <div className="mt-4 flex gap-2 flex-wrap">
-                <Link href={`/dashboard/events/${event._id}/edit`} className="flex-1">
+                <Link href={`/dashboard/events/${event._id}`} className="flex-1">
                   <Button variant="outline" className="w-full sm:w-auto">
                     Edit
                   </Button>

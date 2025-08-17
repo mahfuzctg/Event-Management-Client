@@ -1,32 +1,38 @@
+// src/features/events/hooks.ts
 import useSWR, { mutate } from "swr";
-import { getAllEvents, createEvent, updateEvent, deleteEvent } from "./api";
 import { IEvent } from "@/types/event";
+import { getAllEvents, createEvent, updateEvent, deleteEvent } from "./api";
 
 /**
- * Get events (auto revalidates via SWR)
+ * Fetch all events reactively
  */
 export const useEvents = () => {
-  const { data, error, isLoading } = useSWR("/events", getAllEvents);
-  return { events: data, error, isLoading };
+  const { data, error, isLoading } = useSWR<IEvent[]>("/events", getAllEvents);
+  return { events: data || [], error, isLoading };
 };
 
 /**
- * Event actions (CRUD helpers)
+ * Event actions with immediate frontend update
  */
 export const useEventActions = (token: string) => {
   const addEvent = async (payload: Partial<IEvent>) => {
-    await createEvent(payload, token);
-    mutate("/events"); // revalidate cache
+    const newEvent = await createEvent(payload, token);
+    mutate("/events", (events: IEvent[] = []) => [...events, newEvent], false);
+    return newEvent;
   };
 
   const editEvent = async (id: string, payload: Partial<IEvent>) => {
-    await updateEvent(id, payload, token);
-    mutate("/events");
+    const updatedEvent = await updateEvent(id, payload, token);
+    mutate("/events", (events: IEvent[] = []) =>
+      events.map((e) => (e._id === id ? updatedEvent : e)),
+      false
+    );
+    return updatedEvent;
   };
 
   const removeEvent = async (id: string) => {
     await deleteEvent(id, token);
-    mutate("/events");
+    mutate("/events", (events: IEvent[] = []) => events.filter((e) => e._id !== id), false);
   };
 
   return { addEvent, editEvent, removeEvent };
