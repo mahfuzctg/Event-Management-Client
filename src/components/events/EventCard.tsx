@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import { IEvent } from "@/types/event";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
+import timezone from "dayjs/plugin/timezone";
 import Image from "next/image";
 import {
   Card,
@@ -15,31 +16,38 @@ import {
 import { Button } from "@/components/ui/button";
 import { CalendarDays, MapPin } from "lucide-react";
 
+// ✅ extend dayjs plugins
 dayjs.extend(utc);
+dayjs.extend(timezone);
 
 interface EventCardProps {
   event: IEvent;
-  status: "upcoming" | "ongoing" | "past";
+  status: "Upcoming" | "Ongoing" | "Past";
 }
 
 const DEFAULT_IMAGE =
   "https://res.cloudinary.com/dxv10xebz/image/upload/v1739138568/default-event-placeholder.jpg";
 
 const EventCard: React.FC<EventCardProps> = ({ event, status }) => {
-  const start = dayjs.utc(event.date).format("DD MMM YYYY, h:mm A");
-  const end = dayjs.utc(event.endDate).format("h:mm A");
+  // ✅ detect visitor timezone
+  const visitorTZ = dayjs.tz.guess();
 
-  // Full background color for status badge
+  // ✅ convert event times to visitor’s local timezone
+  const start = dayjs.utc(event.date).tz(visitorTZ).format("DD MMM YYYY, h:mm A");
+  const end = dayjs
+    .utc(event.endDate)
+    .tz(visitorTZ)
+    .format("h:mm A");
+
   const statusClass =
-    status === "upcoming"
+    status === "Upcoming"
       ? "bg-rose-500 text-white"
-      : status === "ongoing"
+      : status === "Ongoing"
       ? "bg-emerald-500 text-white"
       : "bg-gray-500 text-white";
 
   const [showFullDesc, setShowFullDesc] = useState(false);
 
-  // ✅ Safely handle image
   const safeImage =
     event.image && event.image.startsWith("http") ? event.image : DEFAULT_IMAGE;
 
@@ -54,8 +62,6 @@ const EventCard: React.FC<EventCardProps> = ({ event, status }) => {
           className="object-cover"
           priority
         />
-
-        {/* Status Badge */}
         <span
           className={`absolute top-4 left-4 px-3 py-1 rounded-full text-xs font-semibold shadow-md ${statusClass}`}
         >
@@ -73,8 +79,6 @@ const EventCard: React.FC<EventCardProps> = ({ event, status }) => {
             ? event.description
             : `${event.description.slice(0, 100)}...`}
         </CardDescription>
-
-        {/* Read More / Read Less */}
         {event.description.length > 100 && (
           <Button
             variant="ghost"
@@ -92,7 +96,10 @@ const EventCard: React.FC<EventCardProps> = ({ event, status }) => {
         <p className="flex items-center gap-1 text-gray-600 dark:text-gray-300">
           <CalendarDays className="w-4 h-4 text-rose-500" />
           <span>
-            {start} - {end}
+            {start} - {end} <br />
+            <span className="text-xs text-muted-foreground">
+              ({visitorTZ})
+            </span>
           </span>
         </p>
         <p className="flex items-center gap-1 text-gray-700 dark:text-gray-200">

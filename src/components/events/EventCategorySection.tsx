@@ -8,7 +8,7 @@ import NotFoundEvents from "../common/NotFoundEvents";
 interface EventCategorySectionProps {
   title: string;
   events: IEvent[];
-  status: "ongoing" | "upcoming" | "past";
+  status: "Ongoing" | "Upcoming" | "Past";
 }
 
 export default function EventCategorySection({ title, events, status }: EventCategorySectionProps) {
@@ -16,15 +16,15 @@ export default function EventCategorySection({ title, events, status }: EventCat
   let colorClass;
 
   switch (status) {
-    case "ongoing":
+    case "Ongoing":
       Icon = Clock;
       colorClass = "text-green-500";
       break;
-    case "upcoming":
+    case "Upcoming":
       Icon = CalendarDays;
       colorClass = "text-blue-500";
       break;
-    case "past":
+    case "Past":
       Icon = Archive;
       colorClass = "text-gray-400";
       break;

@@ -8,7 +8,11 @@ import { getAllEvents, createEvent, updateEvent, deleteEvent } from "./api";
  */
 export const useEvents = () => {
   const { data, error, isLoading } = useSWR<IEvent[]>("/events", getAllEvents);
-  return { events: data || [], error, isLoading };
+
+  // refetch function using SWR's mutate
+  const refetch = () => mutate("/events");
+
+  return { events: data || [], error, isLoading, refetch };
 };
 
 /**
@@ -23,8 +27,9 @@ export const useEventActions = (token: string) => {
 
   const editEvent = async (id: string, payload: Partial<IEvent>) => {
     const updatedEvent = await updateEvent(id, payload, token);
-    mutate("/events", (events: IEvent[] = []) =>
-      events.map((e) => (e._id === id ? updatedEvent : e)),
+    mutate(
+      "/events",
+      (events: IEvent[] = []) => events.map((e) => (e._id === id ? updatedEvent : e)),
       false
     );
     return updatedEvent;

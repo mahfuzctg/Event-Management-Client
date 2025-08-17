@@ -30,9 +30,9 @@ export default function EventsSection({ events, isLoading }: EventsSectionProps)
 
   return (
     <div className="space-y-12">
-      <EventCategorySection title="Ongoing Events" events={ongoingEvents} status="ongoing" />
-      <EventCategorySection title="Upcoming Events" events={upcomingEvents} status="upcoming" />
-      <EventCategorySection title="Past Events" events={pastEvents} status="past" />
+      <EventCategorySection title="Ongoing Events" events={ongoingEvents} status="Ongoing" />
+      <EventCategorySection title="Upcoming Events" events={upcomingEvents} status="Upcoming" />
+      <EventCategorySection title="Past Events" events={pastEvents} status="Past" />
     </div>
   );
 }

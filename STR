@@ -12,7 +12,7 @@ frontend/
 │   │   │   │   ├── page.tsx           # List events (admin)
 │   │   │   │   ├── create/page.tsx    # Create event
 │   │   │   │   └── [id]/edit/page.tsx # Edit event
-│   │   │   └── profile/page.tsx       # Admin profile
+│   │   │   └── 
 │   │   │
 │   │   ├── events/                    # Public event pages
 │   │   │   ├── page.tsx               # Public listing (Ongoing/Upcoming/Past)

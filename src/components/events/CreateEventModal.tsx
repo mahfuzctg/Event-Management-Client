@@ -23,6 +23,7 @@ interface EventFormProps {
 }
 
 export default function EventForm({ onSubmit, loading, initialData }: EventFormProps) {
+  const [mounted, setMounted] = useState(false);
   const [formData, setFormData] = useState<EventFormData>({
     title: "",
     description: "",
@@ -32,29 +33,34 @@ export default function EventForm({ onSubmit, loading, initialData }: EventFormP
     image: "",
   });
 
+  // Ensure hydration safe by only updating after mount
   useEffect(() => {
-    if (initialData) {
+    setMounted(true);
+  }, []);
+
+  useEffect(() => {
+    if (initialData && mounted) {
       setFormData({
         title: initialData.title || "",
         description: initialData.description || "",
         location: initialData.location || "",
-        date: initialData.date ? new Date(initialData.date).toISOString().slice(0,16) : "",
-        endDate: initialData.endDate ? new Date(initialData.endDate).toISOString().slice(0,16) : "",
+        date: initialData.date
+          ? new Date(initialData.date).toISOString().slice(0, 16)
+          : "",
+        endDate: initialData.endDate
+          ? new Date(initialData.endDate).toISOString().slice(0, 16)
+          : "",
         image: initialData.image || "",
       });
-      console.log("Loaded initialData into form:", initialData);
     }
-  }, [initialData]);
+  }, [initialData, mounted]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
-    console.log("Form change:", e.target.name, e.target.value);
   };
 
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
-
-    console.log("Submitting form with data:", formData);
 
     const title = formData.title.trim();
     const description = formData.description.trim();
@@ -62,7 +68,6 @@ export default function EventForm({ onSubmit, loading, initialData }: EventFormP
 
     if (!title || !description || !date) {
       toast.error("Please fill in all required fields!");
-      console.warn("Form validation failed: required fields missing");
       return;
     }
 
@@ -72,26 +77,14 @@ export default function EventForm({ onSubmit, loading, initialData }: EventFormP
       date: new Date(date).toISOString(),
     };
 
-    if (formData.endDate?.trim()) {
-      payload.endDate = new Date(formData.endDate).toISOString();
-    }
+    if (formData.endDate?.trim()) payload.endDate = new Date(formData.endDate).toISOString();
+    if (formData.location?.trim()) payload.location = formData.location.trim();
+    if (formData.image?.trim()) payload.image = formData.image.trim();
 
-    if (formData.location?.trim()) {
-      payload.location = formData.location.trim();
-    }
-
-    if (formData.image?.trim()) {
-      payload.image = formData.image.trim();
-    }
-
-    console.log("Final payload sent to onSubmit:", payload);
-    try {
-      onSubmit(payload);
-    } catch (err) {
-      console.error("Error in onSubmit:", err);
-      toast.error("Submission failed! Check console for details.");
-    }
+    onSubmit(payload);
   };
+
+  if (!mounted) return null; // Avoid SSR mismatch
 
   return (
     <form

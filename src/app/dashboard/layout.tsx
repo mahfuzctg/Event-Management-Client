@@ -9,12 +9,12 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   return (
     <AuthGuard>
       <div className="flex min-h-screen">
-        {/* Sidebar takes 25% width */}
+      
         <div className="w-1/4">
           <DashboardSidebar />
         </div>
 
-        {/* Main content takes remaining 75% */}
+       
         <div className="w-3/4 flex flex-col">
           <main className="p-6 flex-1">{children}</main>
         </div>
