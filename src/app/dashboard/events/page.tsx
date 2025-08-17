@@ -80,7 +80,7 @@ export default function DashboardEventsPage() {
 
       {/* Event Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-        {filteredEvents.map((event) => {
+        {filteredEvents?.map((event) => {
           const status = getEventStatus(event);
           return (
             <div
