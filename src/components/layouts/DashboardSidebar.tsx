@@ -1,4 +1,3 @@
-
 "use client";
 
 import React from "react";
@@ -31,21 +30,21 @@ export default function DashboardSidebar() {
   };
 
   return (
-    <aside className="w-64 bg-card shadow-lg rounded-r-xl h-screen sticky top-0 p-6 flex flex-col justify-between">
+    <aside className="w-64 bg-card shadow-sm rounded-r-xl fixed top-20 bottom-4 left-0 p-6 flex flex-col justify-between">
+      
+      {/* Top: Profile and Navigation */}
       <div>
-        {/* Brand / Logo */}
-        <div className="mb-8">
-          <Link
-            href="/dashboard"
-            className="flex items-center gap-2 text-xl font-bold bg-gradient-to-r from-rose-500 to-pink-500 bg-clip-text text-transparent"
-          >
-            <CalendarDays className="w-6 h-6 text-rose-500" />
-            Admin Panel
-          </Link>
+        {/* Profile */}
+        <div className="flex flex-col items-center mb-6">
+          <div className="w-20 h-20 flex items-center justify-center rounded-full bg-rose-500 text-white text-3xl font-bold mb-4">
+            A
+          </div>
+          <h3 className="text-lg font-semibold text-foreground">Admin</h3>
+          <p className="text-sm text-muted-foreground">Administrator</p>
         </div>
 
-        {/* Sidebar navigation */}
-        <nav className="flex flex-col gap-2">
+        {/* Navigation */}
+        <nav className="flex flex-col gap-2 mt-6">
           {sidebarItems.map((item) => {
             const isActive = pathname === item.href;
             return (
@@ -63,7 +62,7 @@ export default function DashboardSidebar() {
         </nav>
       </div>
 
-      {/* Logout button */}
+      {/* Bottom: Logout */}
       <div>
         <button
           onClick={handleLogout}

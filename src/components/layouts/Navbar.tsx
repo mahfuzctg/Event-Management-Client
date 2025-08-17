@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useTheme } from "next-themes";
@@ -10,7 +9,6 @@ import { useRouter } from "next/navigation";
 import Cookies from "js-cookie";
 import toast from "react-hot-toast";
 import { useAuth } from "@/providers/AuthContext";
-
 
 export default function Navbar() {
   const { theme, setTheme } = useTheme();
@@ -46,6 +44,16 @@ export default function Navbar() {
         >
           Events
         </Link>
+
+        {/* Dashboard link only visible if logged in */}
+        {isLoggedIn && (
+          <Link
+            href="/dashboard"
+            className="text-sm font-medium hover:text-rose-500 transition-colors"
+          >
+            Dashboard
+          </Link>
+        )}
 
         {isLoggedIn ? (
           <Button
